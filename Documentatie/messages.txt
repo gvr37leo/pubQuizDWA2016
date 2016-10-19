@@ -1,0 +1,65 @@
+startroom 
+{ww}
+van master naar server
+server: create room
+
+joinroom
+{
+    ww
+    roomid
+}
+van teams naar server
+
+teamchanged
+{
+    gameobject || teams[]
+}
+server naar scoreboard
+server naar quizmaster
+
+teamdenied
+{
+    teamid
+}
+master naar server
+->teamchanged
+
+startround
+master naar server
+-> sendquestion
+
+sendquestion
+{
+    question[]
+}
+server naar master
+
+selectquestion
+{
+    questionid
+}
+master naar server
+
+startquestion
+{question}
+server naar scoreboard
+server naar teams
+
+sendanswer
+{answer}
+team naar server
+
+answer approved
+van master naar server
+
+answerschanged
+van server naar scoreboard
+
+endquestion
+van master naar server
+
+continue
+van master naar server
+
+stop
+van master naar server
