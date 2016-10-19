@@ -1,0 +1,32 @@
+Server
+	Quizz night
+		1 Quizz master
+		1 Scoreboard
+		* Team
+		3 Categorie
+			* Question
+
+Scoreboard
+- Room kiezen
+- Data laten zien die van de server komt
+
+Master
+- Room aanmaken met password
+- Teams goed of afkeuren
+- Quiz starten met huidige teams
+- Categorie kiezen voor ronde
+- Elke ronde 12 unieke vragen kiezen
+- Antwoorden goed of fout keuren, wordt pas zichtbaar als de vraag wordt gesloten
+- Kiezen voor een nieuwe ronde of stoppen
+
+Team
+- Room kiezen
+- Teamnaam kiezen die moet worden goedgekeurd
+- 
+
+Server
+- Alle logica
+
+
+webpack code splitting
+State machine
