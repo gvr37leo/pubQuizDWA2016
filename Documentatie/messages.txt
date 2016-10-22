@@ -1,32 +1,49 @@
 startroom 
-{ww}
+{
+	wachtwoord
+}
 van master naar server
-server: create room
+actions:
+	server: creates room
+	server: voegt master toe aan gemaakte room
+
 
 joinroom
 {
-    ww
-    roomid
+	wachtwoord
+	roomid
 }
 van teams naar server
+actions:
+	server: voegt team toe aan room
+
 
 teamchanged
 {
-    gameobject || teams[]
+	gameobject || teams[]
 }
 server naar scoreboard
 server naar quizmaster
+actions:
+	scoreboard and master updates
+
 
 teamdenied
 {
-    teamid
+	teamid
 }
 master naar server
-->teamchanged
+actions:
+	server verstuurd teamchanged
+
 
 startround
+{
+}
 master naar server
--> sendquestion
+actions:
+	server verstuurd sendquestion
+
 
 sendquestion
 {
@@ -34,32 +51,69 @@ sendquestion
 }
 server naar master
 
+
 selectquestion
 {
     questionid
 }
 master naar server
+actions:
+	server verstuurd startquestion
+
 
 startquestion
-{question}
+{
+	question
+}
 server naar scoreboard
 server naar teams
+server naar master
+
 
 sendanswer
-{answer}
+{
+	answer
+}
 team naar server
+actions:
+	server verstuurd answersubmitted
+	server verstuurd answerchanged
 
 answer approved
+{
+	teamid
+}
 van master naar server
 
-answerschanged
+
+answerchanged
+{
+	teamid
+	answer
+}
+van server naar master
+# als een antwoord wordt ingestuurd, met antwoord
+
+answersubmitted
+{
+	teamid
+}
 van server naar scoreboard
+# als een antwoord wordt ingestuurd, zonder antwoord
 
 endquestion
+{
+}
 van master naar server
 
 continue
+{
+}
 van master naar server
+# start nieuwe ronde
 
 stop
+{
+}
 van master naar server
+# stopt quiz
