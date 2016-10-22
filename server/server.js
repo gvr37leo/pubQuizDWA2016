@@ -14,8 +14,8 @@ mongoose.Promise = global.Promise;
 var server = http.createServer();
 var wss = new ws.Server({server: server});
 app.use('/', express.static('../public/team'));
-app.use('/', express.static('../public/scoreboard'));
-app.use('/', express.static('../public/quizmaster'));
+app.use('/scoreboard', express.static('../public/scoreboard'));
+app.use('/quizmaster', express.static('../public/quizmaster'));
 server.on('request', app);
 server.listen(port, () => console.log(`listening on ${port}`))
 
