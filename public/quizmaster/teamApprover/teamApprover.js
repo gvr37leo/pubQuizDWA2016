@@ -14,9 +14,9 @@ export default class TeamApprover extends React.Component{
             teamElements.push(<TeamPanel key={team.id} team={team} />);
         }
         return(
-            <div>
-                <div style={{display:'flex'}}>
-                    <button className="btn btn-success" style={{margin:'40px'}}>Go!</button>
+            <div style={{margin:'20px'}}>
+                <div style={{display:'flex', marginBottom:'20px'}}>
+                    <button className="btn btn-success">Go!</button>
                 </div>
                 <div style={{display:'flex'}}>
                     {teamElements}
