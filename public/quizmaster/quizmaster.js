@@ -8,8 +8,9 @@ import QuestionApprover from './questionApprover/questionApprover'
 export default class Quizmaster extends React.Component{
     constructor(props){
         super(props)
-        this.state= {}  
-        this.state.subView = <RoomCreator />;
+        this.state= {}
+        // <RoomCreator />;
+        this.state.subView = <TeampApprover />
         var socket = new WebSocket("ws://localhost:8000");
 
         socket.onopen = function(){
