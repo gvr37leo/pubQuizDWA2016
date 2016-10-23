@@ -1,12 +1,15 @@
 import React from "react";
-import QuestionApprover from 'questionApprover/questionApprover'
-import QuestionSelector from 'questionSelector/uestionSelector'
-import RoomCreator from 'roomCreator/roomCreator'
-import TeampApprover from 'teamApprover/teamApprover'
+
+import RoomCreator from './roomCreator/roomCreator'
+import TeampApprover from './teamApprover/teamApprover'
+import QuestionSelector from './questionSelector/questionSelector'
+import QuestionApprover from './questionApprover/questionApprover'
 
 export default class Quizmaster extends React.Component{
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
+        this.state= {}  
+        this.state.subView = <RoomCreator />;
         var socket = new WebSocket("ws://localhost:8000");
 
         socket.onopen = function(){
@@ -15,7 +18,20 @@ export default class Quizmaster extends React.Component{
 
         socket.onmessage = function(event){
             var message = event.data
-
+            // switch(message.type){
+            //     case 0:
+            //         this.state.subView = <RoomCreator />
+            //         break;
+            //     case 1:
+            //         this.state.subView = <TeampApprover />
+            //         break;
+            //     case 2:
+            //         this.state.subView = <QuestionSelector />
+            //         break;
+            //     case 3:
+            //         this.state.subView = <QuestionApprover />
+            //         break;
+            // }
         }
 
         socket.onclose = function(){
@@ -29,7 +45,9 @@ export default class Quizmaster extends React.Component{
 
     render(){
         return(
-            <h1>quizmaster</h1>
+            <div>
+                {this.state.subView}
+            </div>
         )
     }
 }
