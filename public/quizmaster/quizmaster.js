@@ -9,9 +9,10 @@ export default class Quizmaster extends React.Component{
     constructor(props){
         super(props)
         this.state= {}
+        // <QuestionSelector />
         // <RoomCreator />;
         // <TeampApprover />
-        this.state.subView = <QuestionSelector />
+        this.state.subView = <QuestionApprover />
         var socket = new WebSocket("ws://localhost:8000");
 
         socket.onopen = function(){
