@@ -5,10 +5,11 @@ export default class RoomCreator extends React.Component{
         super(props)
         this.state = {}
         this.state.roomPassword = ""
+
     }
 
     goBtnClicked(){
-
+        this.props.socket.send(JSON.stringify({password:'test'}))
     }
 
     roomPasswordChange(event){

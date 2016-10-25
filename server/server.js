@@ -2,6 +2,7 @@ var mongo = require('mongodb')
 var mongoose = require('mongoose')
 var express = require('express')
 var app = express();
+var expressWs = require('express-ws')(app);
 var ws = require('ws');
 var http = require('http');
 var bodyparser = require('body-parser')
@@ -19,14 +20,17 @@ app.use('/quizmaster', express.static('../public/quizmaster'));
 server.on('request', app);
 server.listen(port, () => console.log(`listening on ${port}`))
 
-// var questionModel = require('./models/question')
+var Room = require('./Room')
+var rooms = [];
 
 wss.on('connection', function(socket){
     socket.on('message', function(data){
-
+        
+        console.log(data)
+        rooms.push(new Room(socket, data.password))
     })
 
     socket.on('close', function(){
-        
+
     })
 })

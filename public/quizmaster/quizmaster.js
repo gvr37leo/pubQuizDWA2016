@@ -10,10 +10,11 @@ export default class Quizmaster extends React.Component{
         super(props)
         this.state= {}
         // <QuestionSelector />
-        // <RoomCreator />;
+        // <QuestionApprover />;
         // <TeampApprover />
-        this.state.subView = <QuestionApprover />
         var socket = new WebSocket("ws://localhost:8000");
+        this.state.subView = <RoomCreator socket={socket}/>
+
 
         socket.onopen = function(){
             console.log("Socket connection is open!");
