@@ -9,12 +9,15 @@ export default class RoomCreator extends React.Component{
     }
 
     goBtnClicked(){
-        this.props.socket.send(JSON.stringify({password:'test'}))
+        this.props.socket.send(JSON.stringify({
+            route:'createRoom',
+            password:'test'
+        }))
+        this.props.handleStartRoomClick();
     }
 
     roomPasswordChange(event){
         this.setState({roomPassword: event.target.value});
-        // this.state. = event.target.value
     }
 
     render(){
@@ -23,7 +26,7 @@ export default class RoomCreator extends React.Component{
                 <div className="panel panel-primary">
                     <div className="panel-heading">Create a room</div>
                     <div className="panel-body">
-                        <input value={this.state.roomPassword} onChange={this.roomPasswordChange.bind(this)} type="text" className="form-control"/>
+                        <input value={this.state.roomPassword} placeholder='password' onChange={this.roomPasswordChange.bind(this)} type="text" className="form-control"/>
                         <button onClick={this.goBtnClicked.bind(this)} className="btn btn-default">Go!</button>
                     </div>
                 </div>

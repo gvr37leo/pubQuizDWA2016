@@ -6,6 +6,7 @@ var expressWs = require('express-ws')(app);
 var ws = require('ws');
 var http = require('http');
 var bodyparser = require('body-parser')
+var WebIO = require('./webIO')
 var port = 8000;
 
 var dbName = 'quiz';
@@ -18,17 +19,35 @@ app.use('/', express.static('../public/team'));
 app.use('/scoreboard', express.static('../public/scoreboard'));
 app.use('/quizmaster', express.static('../public/quizmaster'));
 server.on('request', app);
-server.listen(port, () => console.log(`listening on ${port}`))
+server.listen(port, () => console.log('listening on ' + port))
 
 var Room = require('./Room')
-var rooms = [];
+var roomMap = {};
 
 wss.on('connection', function(socket){
+    var webIO = new WebIO(socket);
+
     socket.on('message', function(data){
-        
         console.log(data)
-        rooms.push(new Room(socket, data.password))
     })
+
+    webIO.on('login', (data) => {
+        var room = roomMap[data.roomId]
+        if(room.password == data.password){
+            room.teamSockets.push({
+                socket:socket,
+                teamName:teamName
+            });
+            room.updateQuizMaster();
+        }
+    })
+
+    webIO.on('createRoom', (data) => {
+        var room = new Room(socket, data.password);
+        roomMap[room.id] = room;
+        room.updateQuizMaster();
+    })
+
 
     socket.on('close', function(){
 

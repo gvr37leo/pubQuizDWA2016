@@ -12,8 +12,9 @@ export default class Quizmaster extends React.Component{
         // <QuestionSelector />
         // <QuestionApprover />;
         // <TeampApprover />
-        var socket = new WebSocket("ws://localhost:8000");
-        this.state.subView = <RoomCreator socket={socket}/>
+        this.socket = new WebSocket("ws://localhost:8000");
+        var socket = this.socket;
+        this.state.subView = <RoomCreator socket={socket} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
 
 
         socket.onopen = function(){
@@ -22,20 +23,6 @@ export default class Quizmaster extends React.Component{
 
         socket.onmessage = function(event){
             var message = event.data
-            // switch(message.type){
-            //     case 0:
-            //         this.state.subView = <RoomCreator />
-            //         break;
-            //     case 1:
-            //         this.state.subView = <TeampApprover />
-            //         break;
-            //     case 2:
-            //         this.state.subView = <QuestionSelector />
-            //         break;
-            //     case 3:
-            //         this.state.subView = <QuestionApprover />
-            //         break;
-            // }
         }
 
         socket.onclose = function(){
@@ -45,6 +32,10 @@ export default class Quizmaster extends React.Component{
         socket.onerror = function(){
 
         }
+    }
+
+    handleStartRoomClick = function(){
+        this.setState({subView: <TeampApprover socket={this.socket}/>})
     }
 
     render(){

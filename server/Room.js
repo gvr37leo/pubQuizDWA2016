@@ -6,9 +6,23 @@ class Room{
         this.id = Math.floor(Math.random() * 1000);
     }
 
-    static findRoom(rooms, id){
-        for(room of rooms)if(room.id == id)return room;
-        return null;
+    updateQuizMaster(){
+        this.quizMasterSocket.send(
+            JSON.stringify({
+                type:'roomUpdate',
+                room:this.serialize()
+            })
+        )
+    }
+
+    serialize(){
+        var room = {
+            password:this.password,
+            id:this.id,
+            teams:[]
+        }
+        for(team of this.teamSockets)teams.push(team.teamName)
+        return room
     }
 }
 

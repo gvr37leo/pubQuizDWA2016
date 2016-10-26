@@ -5,7 +5,9 @@ export default class TeamApprover extends React.Component{
     constructor(props){
         super(props)
         this.teams = [{id:1, name:'cool'}, {id:2, name:'fruit'}];
-
+        this.props.socket.onmessage = function(event){
+            var data = JSON.parse(event.data);
+        }
     }
 
     render(){
