@@ -17,15 +17,15 @@ export default class RoomPicker extends React.Component{
     }
 
     nameChange(event){
-        this.setState({teamName: event.target.value});
+        this.setState({name: event.target.value});
     }
 
     goBtnClicked(event){
         this.props.socket.send(JSON.stringify({
             route:'login',
             roomId:this.state.roomId,
-            roomPassword: this.state.roomPassword,
-            teamName: this.state.teamName
+            password: this.state.roomPassword,
+            name: this.state.name
         }))
         this.props.loginBtnClicked();
     }
@@ -38,7 +38,7 @@ export default class RoomPicker extends React.Component{
                     <div className="panel-body">
                         <input value={this.state.roomId} onChange={this.roomIdChange.bind(this)} type="text" placeholder='roomId' className="form-control"/>
                         <input value={this.state.roomPassword} onChange={this.roomPasswordChange.bind(this)} type="text" placeholder='roomPassword' className="form-control"/>
-                        <input value={this.state.teamName} onChange={this.nameChange.bind(this)} type="text" placeholder='team name' className="form-control"/>
+                        <input value={this.state.name} onChange={this.nameChange.bind(this)} type="text" placeholder='team name' className="form-control"/>
                         <button onClick={this.goBtnClicked.bind(this)} className="btn btn-default">Go!</button>
                     </div>
                 </div>

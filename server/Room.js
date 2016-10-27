@@ -21,7 +21,9 @@ class Room{
             id:this.id,
             teams:[]
         }
-        for(team of this.teamSockets)teams.push(team.teamName)
+        for(var team of this.teamSockets){
+            room.teams.push({name:team.name})
+        }
         return room
     }
 }

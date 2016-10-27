@@ -28,7 +28,7 @@ wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
 
     socket.on('message', function(data){
-        console.log(data)
+
     })
 
     webIO.on('login', (data) => {
@@ -36,7 +36,7 @@ wss.on('connection', function(socket){
         if(room.password == data.password){
             room.teamSockets.push({
                 socket:socket,
-                teamName:teamName
+                name:data.name
             });
             room.updateQuizMaster();
         }
@@ -44,12 +44,13 @@ wss.on('connection', function(socket){
 
     webIO.on('createRoom', (data) => {
         var room = new Room(socket, data.password);
+        socket.roomId = room.id
         roomMap[room.id] = room;
         room.updateQuizMaster();
     })
 
 
     socket.on('close', function(){
-
+        delete roomMap[socket.roomId]
     })
 })

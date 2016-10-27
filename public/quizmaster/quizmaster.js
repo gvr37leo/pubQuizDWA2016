@@ -35,7 +35,11 @@ export default class Quizmaster extends React.Component{
     }
 
     handleStartRoomClick = function(){
-        this.setState({subView: <TeampApprover socket={this.socket}/>})
+        this.setState({subView: <TeampApprover handleStartQuizClick={this.handleStartQuizClick.bind(this)} socket={this.socket}/>})
+    }
+
+    handleStartQuizClick = function(){
+        this.setState({subView: <QuestionSelector socket={this.socket}/>})
     }
 
     render(){

@@ -22,7 +22,6 @@ export default class QuestionSelector extends React.Component{
                 <div className="panel panel-primary" style={{padding:'40px', display:'flex'}}>
                     {questionElements}
                 </div>
-
             </div>
         )
     }
