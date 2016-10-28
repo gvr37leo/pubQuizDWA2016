@@ -22,35 +22,46 @@ server.on('request', app);
 server.listen(port, () => console.log('listening on ' + port))
 
 var Room = require('./Room')
+var Team = require('./Team')
 var roomMap = {};
+var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wat', category:'sport'}, {id:3, question:'waar', category:'science'}]
 
 wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
 
-    socket.on('message', function(data){
+    webIO.on('roundStart', (data) => {
+        webIO.send('questions', {
+                questions:questions
+            }
+        )
+    })
 
+    webIO.on('selectquestion', (data) => {
+        var room = roomMap[webIO.roomId]
+        room.currentQuestion = questions.find((entry) => {
+            return entry.id == data.id
+        })
+        room.updateQuestions();
+        console.log(data)
     })
 
     webIO.on('login', (data) => {
         var room = roomMap[data.roomId]
         if(room.password == data.password){
-            room.teamSockets.push({
-                socket:socket,
-                name:data.name
-            });
+            room.teams.push(new Team(data.name, webIO));
             room.updateQuizMaster();
         }
     })
 
     webIO.on('createRoom', (data) => {
-        var room = new Room(socket, data.password);
-        socket.roomId = room.id
+        var room = new Room(webIO, data.password);
+        webIO.roomId = room.id
         roomMap[room.id] = room;
         room.updateQuizMaster();
     })
 
 
     socket.on('close', function(){
-        delete roomMap[socket.roomId]
+        delete roomMap[webIO.roomId]
     })
 })

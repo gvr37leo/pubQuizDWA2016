@@ -9,10 +9,9 @@ export default class RoomCreator extends React.Component{
     }
 
     goBtnClicked(){
-        this.props.socket.send(JSON.stringify({
-            route:'createRoom',
+        this.props.webIO.send('createRoom', {
             password:this.state.roomPassword
-        }))
+        })
         this.props.handleStartRoomClick();
     }
 

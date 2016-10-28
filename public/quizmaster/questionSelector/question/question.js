@@ -6,7 +6,8 @@ export default class Question extends React.Component{
     }
 
     btnQuestionClicked(evt){
-
+        this.props.webIO.send('selectquestion',{id:this.props.question.id})
+        this.props.btnQuestionClicked();
     }
 
     render(){
@@ -18,7 +19,6 @@ export default class Question extends React.Component{
                     {this.props.question.question}
                 </button>
             </div>
-
         )
     }
 }

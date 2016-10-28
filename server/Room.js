@@ -1,18 +1,23 @@
 class Room{
-    constructor(quizMasterSocket, password){
-        this.quizMasterSocket = quizMasterSocket;
-        this.teamSockets = [];
+    constructor(quizMasterWebIO, password){
+        this.quizMasterWebIO = quizMasterWebIO;
+        this.teams = [];
         this.password = password;
         this.id = Math.floor(Math.random() * 1000);
+        this.currentQuestion;
     }
 
     updateQuizMaster(){
-        this.quizMasterSocket.send(
-            JSON.stringify({
-                type:'roomUpdate',
+        this.quizMasterWebIO.send('roomUpdate',{
                 room:this.serialize()
-            })
+            }
         )
+    }
+
+    updateQuestions(){
+        for(var team of teams){
+            team.webIO.send('questionUpdate', this.currentQuestion)
+        }
     }
 
     serialize(){
@@ -21,7 +26,7 @@ class Room{
             id:this.id,
             teams:[]
         }
-        for(var team of this.teamSockets){
+        for(var team of this.teams){
             room.teams.push({name:team.name})
         }
         return room

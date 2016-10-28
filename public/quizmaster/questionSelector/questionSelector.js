@@ -5,7 +5,16 @@ export default class QuestionSelector extends React.Component{
     constructor(props){
         super(props)
         this.state = {}
-        this.state.questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wat', category:'culture'}, {id:3, question:'waar', category:'culture'}]
+        this.state.questions = []
+        this.props.webIO.on('questions', (data) => {
+            this.setState({
+                questions: data.questions
+            });
+        })
+    }
+
+    btnQuestionClicked(){
+        this.props.btnQuestionClicked();
     }
 
     render(){
@@ -14,6 +23,8 @@ export default class QuestionSelector extends React.Component{
             questionElements.push(<Question
                 key={question.id}
                 question={question}
+                webIO={this.props.webIO}
+                btnQuestionClicked = {this.btnQuestionClicked.bind(this)}
                 />)
         }
 

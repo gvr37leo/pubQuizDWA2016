@@ -4,6 +4,8 @@ import RoomCreator from './roomCreator/roomCreator'
 import TeampApprover from './teamApprover/teamApprover'
 import QuestionSelector from './questionSelector/questionSelector'
 import QuestionApprover from './questionApprover/questionApprover'
+var WebIO =  require('../../server/webIO');
+
 
 export default class Quizmaster extends React.Component{
     constructor(props){
@@ -12,18 +14,18 @@ export default class Quizmaster extends React.Component{
         // <QuestionSelector />
         // <QuestionApprover />;
         // <TeampApprover />
-        this.socket = new WebSocket("ws://localhost:8000");
-        var socket = this.socket;
-        this.state.subView = <RoomCreator socket={socket} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
+        var socket = new WebSocket("ws://localhost:8000");
+        this.webIO = new WebIO(socket)
+        this.state.subView = <RoomCreator webIO={this.webIO} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
 
 
         socket.onopen = function(){
             console.log("Socket connection is open!");
         }
 
-        socket.onmessage = function(event){
-            var message = event.data
-        }
+        // socket.onmessage = function(event){//overrides onmessage in webio
+        //     var message = event.data
+        // }
 
         socket.onclose = function(){
 
@@ -35,11 +37,15 @@ export default class Quizmaster extends React.Component{
     }
 
     handleStartRoomClick = function(){
-        this.setState({subView: <TeampApprover handleStartQuizClick={this.handleStartQuizClick.bind(this)} socket={this.socket}/>})
+        this.setState({subView: <TeampApprover handleStartQuizClick={this.handleStartQuizClick.bind(this)} webIO={this.webIO}/>})
     }
 
     handleStartQuizClick = function(){
-        this.setState({subView: <QuestionSelector socket={this.socket}/>})
+        this.setState({subView: <QuestionSelector btnQuestionClicked={this.btnQuestionClicked.bind(this)} webIO={this.webIO}/>})
+    }
+
+    btnQuestionClicked = function(){
+        this.setState({subView: <QuestionApprover  webIO={this.webIO}/>})
     }
 
     render(){

@@ -7,26 +7,24 @@ export default class TeamApprover extends React.Component{
 
         this.state = {};
         this.state.teams = []
-        this.props.socket.onmessage = (event) => {
-            // roomUpdate needs to be switch cased or webiod
-            var data = JSON.parse(event.data);
-
+        this.props.webIO.on('roomUpdate', (data) => {
             this.setState({
                 id:data.room.id,
                 password:data.room.password,
                 teams:data.room.teams
             });
-        }
+        })
     }
 
     goBtnClicked(){
+        this.props.webIO.send('roundStart', {})
         this.props.handleStartQuizClick()
     }
 
     render(){
         var teamElements = [];
         for(var team of this.state.teams){
-            teamElements.push(<TeamPanel key={team.id} team={team} />);
+            teamElements.push(<TeamPanel key={team.name} team={team} />);
         }
         return(
             <div style={{margin:'20px'}}>
