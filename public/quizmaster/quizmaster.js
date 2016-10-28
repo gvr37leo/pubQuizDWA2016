@@ -20,7 +20,7 @@ export default class Quizmaster extends React.Component{
 
 
         socket.onopen = function(){
-            console.log("Socket connection is open!");
+            
         }
 
         // socket.onmessage = function(event){//overrides onmessage in webio

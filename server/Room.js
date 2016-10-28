@@ -15,7 +15,7 @@ class Room{
     }
 
     updateQuestions(){
-        for(var team of teams){
+        for(var team of this.teams){
             team.webIO.send('questionUpdate', this.currentQuestion)
         }
     }

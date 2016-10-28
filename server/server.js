@@ -28,7 +28,7 @@ var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wa
 
 wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
-
+    var room;
     webIO.on('roundStart', (data) => {
         webIO.send('questions', {
                 questions:questions
@@ -36,8 +36,11 @@ wss.on('connection', function(socket){
         )
     })
 
+    webIO.on('sendanswer', (data) => {
+
+    })
+
     webIO.on('selectquestion', (data) => {
-        var room = roomMap[webIO.roomId]
         room.currentQuestion = questions.find((entry) => {
             return entry.id == data.id
         })
@@ -46,15 +49,17 @@ wss.on('connection', function(socket){
     })
 
     webIO.on('login', (data) => {
-        var room = roomMap[data.roomId]
-        if(room.password == data.password){
+
+        room = roomMap[data.roomId]
+        if(room && room.password == data.password){
             room.teams.push(new Team(data.name, webIO));
+            webIO.teamName = data.name;
             room.updateQuizMaster();
         }
     })
 
     webIO.on('createRoom', (data) => {
-        var room = new Room(webIO, data.password);
+        room = new Room(webIO, data.password);
         webIO.roomId = room.id
         roomMap[room.id] = room;
         room.updateQuizMaster();
@@ -62,6 +67,25 @@ wss.on('connection', function(socket){
 
 
     socket.on('close', function(){
+        if(webIO.teamName){//maybe room.teams een map maken voor snelle lookup om dit geloop te voorkomen
+            for(var i = 0; i < room.teams.length; i++){
+                var team = room.teams[i];
+                if(team.name == webIO.teamName){
+                    room.teams.splice(i, 1);
+                    try{//doc zegt dat write failures hierdoor niet gecatched worden en de ingebouwde error handling gebruikt moet worden
+                        room.updateQuizMaster();//disconnecting clients are able to call a dead quizmastersocket causing an error here
+                    }catch(e){
+                        console.log('probablye quizmaster already disconnected')
+                    }
+                    break;
+                }
+            }
+        }
+        if(roomMap[webIO.roomId]){
+            for(team of room.teams){
+                team.webIO.socket.close()
+            }
+        }
         delete roomMap[webIO.roomId]
     })
 })

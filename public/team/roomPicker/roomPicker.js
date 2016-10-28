@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 
 export default class RoomPicker extends React.Component{
@@ -21,12 +19,11 @@ export default class RoomPicker extends React.Component{
     }
 
     goBtnClicked(event){
-        this.props.socket.send(JSON.stringify({
-            route:'login',
+        this.props.webIO.send('login', {
             roomId:this.state.roomId,
             password: this.state.roomPassword,
             name: this.state.name
-        }))
+        })
         this.props.loginBtnClicked();
     }
 
@@ -42,7 +39,6 @@ export default class RoomPicker extends React.Component{
                         <button onClick={this.goBtnClicked.bind(this)} className="btn btn-default">Go!</button>
                     </div>
                 </div>
-
             </div>
         )
     }
