@@ -24,7 +24,7 @@ export default class TeamApprover extends React.Component{
     render(){
         var teamElements = [];
         for(var team of this.state.teams){
-            teamElements.push(<TeamPanel key={team.name} team={team} />);
+            teamElements.push(<TeamPanel key={team.id} team={team} webIO={this.props.webIO}/>);
         }
         return(
             <div style={{margin:'20px'}}>

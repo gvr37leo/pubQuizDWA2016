@@ -14,9 +14,22 @@ class Room{
         )
     }
 
+    updateAnswers(){
+        this.quizMasterWebIO.send('answerchanged',{
+                room:this.serialize()
+            }
+        )
+    }
+
     updateQuestions(){
         for(var team of this.teams){
             team.webIO.send('questionUpdate', this.currentQuestion)
+        }
+    }
+
+    findTeamIndex(id){
+        for(var i = 0; i < this.teams.length; i++){
+            if(this.teams[i].id == id)return i;
         }
     }
 
@@ -27,7 +40,7 @@ class Room{
             teams:[]
         }
         for(var team of this.teams){
-            room.teams.push({name:team.name})
+            room.teams.push(team.serialize())
         }
         return room
     }

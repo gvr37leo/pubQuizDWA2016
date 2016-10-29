@@ -29,6 +29,7 @@ var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wa
 wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
     var room;
+    
     webIO.on('roundStart', (data) => {
         webIO.send('questions', {
                 questions:questions
@@ -36,8 +37,23 @@ wss.on('connection', function(socket){
         )
     })
 
-    webIO.on('sendanswer', (data) => {
+    webIO.on('answerApproved', (data) => {
+        var index = room.findTeamIndex(data.id);
+        room.teams[index].approved = true;
+        room.updateAnswers();
+    })
 
+    webIO.on('teamdenied', (data) => {
+        var index = room.findTeamIndex(data.id)
+        room.teams[index].webIO.close();
+        room.teams.splice(index, 1)
+        room.updateQuizMaster();
+    })
+
+    webIO.on('sendanswer', (data) => {
+        var index = room.findTeamIndex(webIO.teamId)
+        room.teams[index].answer = data.answer;
+        room.updateAnswers();
     })
 
     webIO.on('selectquestion', (data) => {
@@ -45,15 +61,15 @@ wss.on('connection', function(socket){
             return entry.id == data.id
         })
         room.updateQuestions();
-        console.log(data)
     })
 
     webIO.on('login', (data) => {
 
         room = roomMap[data.roomId]
         if(room && room.password == data.password){
-            room.teams.push(new Team(data.name, webIO));
-            webIO.teamName = data.name;
+            var team = new Team(data.name, webIO);
+            room.teams.push(team);
+            webIO.teamId = team.id;
             room.updateQuizMaster();
         }
     })
@@ -67,25 +83,21 @@ wss.on('connection', function(socket){
 
 
     socket.on('close', function(){
-        if(webIO.teamName){//maybe room.teams een map maken voor snelle lookup om dit geloop te voorkomen
-            for(var i = 0; i < room.teams.length; i++){
-                var team = room.teams[i];
-                if(team.name == webIO.teamName){
-                    room.teams.splice(i, 1);
-                    try{//doc zegt dat write failures hierdoor niet gecatched worden en de ingebouwde error handling gebruikt moet worden
-                        room.updateQuizMaster();//disconnecting clients are able to call a dead quizmastersocket causing an error here
-                    }catch(e){
-                        console.log('probablye quizmaster already disconnected')
-                    }
-                    break;
-                }
+        if(webIO.teamId){
+            var index = room.findTeamIndex(webIO.teamId)
+            var team = room.teams[index];
+            room.teams.splice(index, 1);
+            try{//doc zegt dat write failures hierdoor niet gecatched worden en de ingebouwde error handling gebruikt moet worden
+                room.updateQuizMaster();//disconnecting clients are able to call a dead quizmastersocket causing an error here
+            }catch(e){
+                console.log('probablye quizmaster already disconnected')
             }
         }
         if(roomMap[webIO.roomId]){
             for(team of room.teams){
-                team.webIO.socket.close()
+                team.webIO.close()
             }
+            delete roomMap[webIO.roomId]
         }
-        delete roomMap[webIO.roomId]
     })
 })

@@ -5,13 +5,17 @@ export default class QuestionApprover extends React.Component{
     constructor(props){
         super(props)
         this.state = {}
-        this.state.answers = [{id:1, answer:'hij', team:'coolen boyz', approved:false}, {id:2, answer:'hullie', team:'horp', approved:true}]
+        this.state.teams = [];
+
+        this.props.webIO.on('answerchanged', (data) => {
+            this.setState({teams:data.room.teams})
+        })
     }
 
     render(){
-        var answerElements = [];
-        for(var answer of this.state.answers){
-            answerElements.push(<TeamAnswer key={answer.id} answer={answer} />);
+        var teamElements = [];
+        for(var team of this.state.teams){
+            teamElements.push(<TeamAnswer key={team.id} team={team} webIO={this.props.webIO}/>);
         }
         return(
             <div style={{margin:'20px'}}>
@@ -19,7 +23,7 @@ export default class QuestionApprover extends React.Component{
                     <button className="btn btn-success">Next</button>
                 </div>
                 <div style={{display:'flex'}}>
-                    {answerElements}
+                    {teamElements}
                 </div>
             </div>
         )

@@ -22,6 +22,10 @@ class WebIO{
         value.route = route;
         this.socket.send(JSON.stringify(value))
     }
+
+    close(){
+        this.socket.close();
+    }
 }
 
 module.exports = WebIO;

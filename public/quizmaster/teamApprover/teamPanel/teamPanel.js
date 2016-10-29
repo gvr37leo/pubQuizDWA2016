@@ -5,14 +5,14 @@ export default class teamPanel extends React.Component{
         super(props)
     }
 
-    btnApprovedClicked(evt){
-
+    btnDeclinedClicked(evt){
+        this.props.webIO.send('teamdenied', {id:this.props.team.id})
     }
 
     render(){
         var button = null;
         if(!this.props.team.approved){
-            button = <button onClick={this.btnApprovedClicked.bind(this)} className="btn btn-default">X</button>
+            button = <button onClick={this.btnDeclinedClicked.bind(this)} className="btn btn-default">X</button>
         }
         return(
             <div className='panel panel-primary' style={{marginRight:'40px', minWidth:'150px'}}>

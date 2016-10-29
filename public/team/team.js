@@ -13,6 +13,7 @@ export default class Team extends React.Component{
 
         socket.onclose = (e) => {
             socket = new WebSocket("ws://localhost:8000");
+            this.webIO = new WebIO(socket);
             this.setState({subView:<RoomPicker webIO={this.webIO} loginBtnClicked={this.loginBtnClicked.bind(this)}/>});
         }
     }
