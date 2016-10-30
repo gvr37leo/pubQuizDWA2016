@@ -12,6 +12,11 @@ export default class QuestionApprover extends React.Component{
         })
     }
 
+    btnNextQuestionClicked(){
+        this.props.webIO.send('roundStart', {});
+        this.props.btnNextQuestionClicked();
+    }
+
     render(){
         var teamElements = [];
         for(var team of this.state.teams){
@@ -20,7 +25,7 @@ export default class QuestionApprover extends React.Component{
         return(
             <div style={{margin:'20px'}}>
                 <div style={{display:'flex', marginBottom:'20px'}}>
-                    <button className="btn btn-success">Next</button>
+                    <button onClick={this.btnNextQuestionClicked.bind(this)} className="btn btn-success">Next</button>
                 </div>
                 <div style={{display:'flex'}}>
                     {teamElements}

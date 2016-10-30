@@ -20,7 +20,7 @@ export default class Quizmaster extends React.Component{
 
 
         socket.onopen = function(){
-            
+
         }
 
         // socket.onmessage = function(event){//overrides onmessage in webio
@@ -45,7 +45,11 @@ export default class Quizmaster extends React.Component{
     }
 
     btnQuestionClicked = function(){
-        this.setState({subView: <QuestionApprover  webIO={this.webIO}/>})
+        this.setState({subView: <QuestionApprover btnNextQuestionClicked={this.btnNextQuestionClicked.bind(this)} webIO={this.webIO}/>})
+    }
+
+    btnNextQuestionClicked = function(){
+        this.handleStartQuizClick();
     }
 
     render(){

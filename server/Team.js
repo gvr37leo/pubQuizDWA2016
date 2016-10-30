@@ -5,6 +5,7 @@ class Team {
         this.webIO = webIO;
         this.answer;
         this.approved = false;
+        this.score = 0;
     }
 
     serialize(){

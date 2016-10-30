@@ -4,7 +4,9 @@ class Room{
         this.teams = [];
         this.password = password;
         this.id = Math.floor(Math.random() * 1000);
+
         this.currentQuestion;
+        this.questionCount = 0;
     }
 
     updateQuizMaster(){
@@ -21,10 +23,11 @@ class Room{
         )
     }
 
-    updateQuestions(){
+    startquestion(){
         for(var team of this.teams){
-            team.webIO.send('questionUpdate', this.currentQuestion)
+            team.webIO.send('startquestion', this.currentQuestion)
         }
+        this.quizMasterWebIO.send('startquestion', this.currentQuestion)
     }
 
     findTeamIndex(id){

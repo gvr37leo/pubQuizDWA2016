@@ -29,42 +29,15 @@ var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wa
 wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
     var room;
-    
-    webIO.on('roundStart', (data) => {
-        webIO.send('questions', {
-                questions:questions
-            }
-        )
-    })
 
-    webIO.on('answerApproved', (data) => {
-        var index = room.findTeamIndex(data.id);
-        room.teams[index].approved = true;
-        room.updateAnswers();
-    })
-
-    webIO.on('teamdenied', (data) => {
-        var index = room.findTeamIndex(data.id)
-        room.teams[index].webIO.close();
-        room.teams.splice(index, 1)
+    webIO.on('createRoom', (data) => {//quizmaster
+        room = new Room(webIO, data.password);
+        webIO.roomId = room.id
+        roomMap[room.id] = room;
         room.updateQuizMaster();
     })
 
-    webIO.on('sendanswer', (data) => {
-        var index = room.findTeamIndex(webIO.teamId)
-        room.teams[index].answer = data.answer;
-        room.updateAnswers();
-    })
-
-    webIO.on('selectquestion', (data) => {
-        room.currentQuestion = questions.find((entry) => {
-            return entry.id == data.id
-        })
-        room.updateQuestions();
-    })
-
-    webIO.on('login', (data) => {
-
+    webIO.on('login', (data) => {//team
         room = roomMap[data.roomId]
         if(room && room.password == data.password){
             var team = new Team(data.name, webIO);
@@ -74,15 +47,60 @@ wss.on('connection', function(socket){
         }
     })
 
-    webIO.on('createRoom', (data) => {
-        room = new Room(webIO, data.password);
-        webIO.roomId = room.id
-        roomMap[room.id] = room;
+    webIO.on('teamdenied', (data) => {//quizmaster
+        var index = room.findTeamIndex(data.id)
+        room.teams[index].webIO.close();
+        room.teams.splice(index, 1)
         room.updateQuizMaster();
     })
 
+    webIO.on('roundStart', (data) => {//quizmaster
+        // get random questions from categorys
+        webIO.send('questions', {
+                questions:questions
+            }
+        )
+    })
 
-    socket.on('close', function(){
+    webIO.on('selectquestion', (data) => {//quizmaster
+        room.currentQuestion = questions.find((entry) => {
+            return entry.id == data.id
+        })
+        room.startquestion();
+    })
+
+    webIO.on('sendanswer', (data) => {//team
+        var index = room.findTeamIndex(webIO.teamId)
+        room.teams[index].answer = data.answer;
+        room.updateAnswers();
+    })
+
+    webIO.on('answerApproved', (data) => {//quizmaster
+        var index = room.findTeamIndex(data.id);
+        room.teams[index].approved = true;
+        room.teams[index].score++;
+        room.updateAnswers();
+    })
+
+    webIO.on('nextQuestion', (data) => {
+        room.questionCount++;
+
+        for(team of room.teams){
+            team.approved = false;
+            team.answer = '';
+        }
+        if(room.questionCount > 3){
+            //continue or restart
+        }else{
+            webIO.send('questions', {
+                    questions:questions
+                }
+            )
+        }
+
+    })
+
+    socket.on('close', function(){//quizmaster && team
         if(webIO.teamId){
             var index = room.findTeamIndex(webIO.teamId)
             var team = room.teams[index];

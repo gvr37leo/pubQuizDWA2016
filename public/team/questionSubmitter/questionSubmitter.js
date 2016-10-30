@@ -5,7 +5,7 @@ export default class QuestionSubmitter extends React.Component{
         super(props)
         this.state = {};
 
-        this.props.webIO.on('questionUpdate', (data) => {
+        this.props.webIO.on('startquestion', (data) => {
             this.setState({question: data.question})
         })
     }
