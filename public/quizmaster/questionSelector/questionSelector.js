@@ -14,18 +14,23 @@ export default class QuestionSelector extends React.Component{
     }
 
     btnQuestionClicked(){
+
+
         this.props.btnQuestionClicked();
     }
 
     render(){
         var questionElements = [];
+        var i = 0;
         for(var question of this.state.questions){
             questionElements.push(<Question
+                index={i}
                 key={question.id}
                 question={question}
                 webIO={this.props.webIO}
                 btnQuestionClicked = {this.btnQuestionClicked.bind(this)}
                 />)
+            i++;
         }
 
         return(

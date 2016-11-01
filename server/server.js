@@ -9,8 +9,12 @@ var bodyparser = require('body-parser')
 var WebIO = require('./webIO')
 var port = 8000;
 
-var dbName = 'quiz';
-mongoose.connect('mongodb://localhost/' + dbName);
+var dbName = 'pubquiz';
+
+var QuestionModel = require('./models/questionModel').model
+mongoose.connect('mongodb://localhost/' + dbName, (err) => {
+    console.log('connected to mongo')
+});
 mongoose.Promise = global.Promise;
 
 var server = http.createServer();
@@ -23,8 +27,9 @@ server.listen(port, () => console.log('listening on ' + port))
 
 var Room = require('./Room')
 var Team = require('./Team')
+
+
 var roomMap = {};
-var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wat', category:'sport'}, {id:3, question:'waar', category:'science'}]
 
 wss.on('connection', function(socket){
     var webIO = new WebIO(socket);
@@ -55,17 +60,30 @@ wss.on('connection', function(socket){
     })
 
     webIO.on('roundStart', (data) => {//quizmaster
-        // get random questions from categorys
-        webIO.send('questions', {
-                questions:questions
+        QuestionModel.find({}).lean().exec((err, questions) =>{
+
+            var randoms = [];
+            for(var i = 0; i < 3; i++){
+                randoms.push(questions[Math.floor(Math.random() * questions.length)])
             }
-        )
+            room.selectableQuestions = randoms;
+            room.questionCount++;
+            room.resetTeams();
+
+            if(room.questionCount > 3){
+                //continue or restart
+            }else{
+                webIO.send('questions', {
+                        questions:randoms
+                    }
+                )
+            }
+            
+        })
     })
 
     webIO.on('selectquestion', (data) => {//quizmaster
-        room.currentQuestion = questions.find((entry) => {
-            return entry.id == data.id
-        })
+        room.currentQuestion = room.selectableQuestions[data.index];
         room.startquestion();
     })
 
@@ -80,24 +98,6 @@ wss.on('connection', function(socket){
         room.teams[index].approved = true;
         room.teams[index].score++;
         room.updateAnswers();
-    })
-
-    webIO.on('nextQuestion', (data) => {
-        room.questionCount++;
-
-        for(team of room.teams){
-            team.approved = false;
-            team.answer = '';
-        }
-        if(room.questionCount > 3){
-            //continue or restart
-        }else{
-            webIO.send('questions', {
-                    questions:questions
-                }
-            )
-        }
-
     })
 
     socket.on('close', function(){//quizmaster && team
