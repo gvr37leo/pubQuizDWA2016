@@ -24,6 +24,11 @@ class Room{
         )
     }
 
+    updateQuestions(questions){
+        this.quizMasterWebIO.send('questions', { questions:questions})
+        for(var team of this.teams)team.webIO.send('questions', {})
+    }
+
     startquestion(){
         for(var team of this.teams){
             team.webIO.send('startquestion', this.currentQuestion)

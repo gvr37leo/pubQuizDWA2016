@@ -73,10 +73,7 @@ wss.on('connection', function(socket){
             if(room.questionCount > 3){
                 //continue or restart
             }else{
-                webIO.send('questions', {
-                        questions:randoms
-                    }
-                )
+                room.updateQuestions(randoms);
             }
             
         })

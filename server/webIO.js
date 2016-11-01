@@ -9,7 +9,7 @@ class WebIO{
             if(that.routeMap[parsedData.route]){
                 that.routeMap[parsedData.route](parsedData)
             }else{
-                console.log('404 route not found')
+                console.log('404: ' + parsedData.route)
             }
         }
     }
