@@ -4,32 +4,21 @@ import RoomCreator from './roomCreator/roomCreator'
 import TeampApprover from './teamApprover/teamApprover'
 import QuestionSelector from './questionSelector/questionSelector'
 import QuestionApprover from './questionApprover/questionApprover'
-var WebIO =  require('../../server/webIO');
+import ContNext from './contNext/contNext'
 
+var WebIO =  require('../../server/webIO');
 
 export default class Quizmaster extends React.Component{
     constructor(props){
         super(props)
         this.state= {}
-        // <QuestionSelector />
-        // <QuestionApprover />;
-        // <TeampApprover />
         var socket = new WebSocket("ws://localhost:8000");
         this.webIO = new WebIO(socket)
         this.state.subView = <RoomCreator webIO={this.webIO} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
 
-
-        socket.onopen = function(){
-
-        }
-
-        // socket.onmessage = function(event){//overrides onmessage in webio
-        //     var message = event.data
-        // }
-
-        socket.onclose = function(){
-
-        }
+        this.webIO.on('endRound', () => {
+            this.setState({subView:<ContNext  webIO={this.webIO} />})
+        })
 
         socket.onerror = function(){
 
