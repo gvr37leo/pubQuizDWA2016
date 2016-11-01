@@ -71,6 +71,7 @@ wss.on('connection', function(socket){
             room.resetTeams();
 
             if(room.questionCount > 3){
+                webIO.send('endRound', {})
                 //continue or restart
             }else{
                 room.updateQuestions(randoms);
