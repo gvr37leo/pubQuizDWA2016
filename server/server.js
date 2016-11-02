@@ -60,29 +60,12 @@ wss.on('connection', function(socket){
     })
 
     webIO.on('roundStart', (data) => {//quizmaster
-        QuestionModel.find({}).lean().exec((err, questions) =>{
-
-            var randoms = [];
-            for(var i = 0; i < 3; i++){
-                randoms.push(questions[Math.floor(Math.random() * questions.length)])
-            }
-            room.selectableQuestions = randoms;
-            room.questionCount++;
-            room.resetTeams();
-
-            if(room.questionCount > 3){
-                webIO.send('endRound', {})
-                //continue or restart
-            }else{
-                room.updateQuestions(randoms);
-            }
-            
-        })
+        room.startChooseQuestion(QuestionModel)
     })
 
     webIO.on('selectquestion', (data) => {//quizmaster
         room.currentQuestion = room.selectableQuestions[data.index];
-        room.startquestion();
+        room.selectQuestion();
     })
 
     webIO.on('sendanswer', (data) => {//team
@@ -96,6 +79,15 @@ wss.on('connection', function(socket){
         room.teams[index].approved = true;
         room.teams[index].score++;
         room.updateAnswers();
+    })
+
+    webIO.on('continue', (data) => {//quizmaster
+        room.questionCount = 0;
+        room.startChooseQuestion(QuestionModel);
+    })
+
+    webIO.on('stop', (data) => {//quizmaster
+        room.questionCount = 0;
     })
 
     socket.on('close', function(){//quizmaster && team

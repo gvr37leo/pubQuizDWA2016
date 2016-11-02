@@ -18,7 +18,7 @@ export default class Team extends React.Component{
             this.setState({subView:<RoomPicker webIO={this.webIO} loginBtnClicked={this.loginBtnClicked.bind(this)}/>});
         }
 
-        this.webIO.on('startquestion', (data) => {
+        this.webIO.on('selectQuestion', (data) => {
             this.setState({subView:<QuestionSubmitter question={data.question} webIO={this.webIO}/>});
         })
 

@@ -7,10 +7,6 @@ export default class QuestionApprover extends React.Component{
         this.state = {}
         this.state.teams = [];
 
-        this.props.webIO.on('startquestion', (data) =>{
-            this.setState({question:data.question})
-        })
-
         this.props.webIO.on('answerchanged', (data) => {
             this.setState({teams:data.room.teams})
         })
@@ -35,7 +31,7 @@ export default class QuestionApprover extends React.Component{
                             <button onClick={this.btnNextQuestionClicked.bind(this)} className="btn btn-success" style={{marginBottom:'10px'}}>Next</button>
                             <div style={{display:'flex'}}>
                                 <label>Question: </label>
-                                <p>{this.state.question}</p>
+                                <p>{this.props.question}</p>
                             </div>
 
                         </div>
@@ -48,16 +44,3 @@ export default class QuestionApprover extends React.Component{
         )
     }
 }
-// <div className='panel panel-primary' style={{marginRight:'40px', minWidth:'150px'}}>
-//     <div className="panel-body">
-//         <button onClick={this.goBtnClicked.bind(this)} className="btn btn-success" style={{marginBottom:'10px'}}>Go!</button>
-//         <div style={{display:'flex'}}>
-//             <label>Room ID: </label>
-//             <p>{this.state.id}</p>
-//         </div>
-//         <div style={{display:'flex'}}>
-//             <label>Password: </label>
-//             <p>{this.state.password}</p>
-//         </div>
-//     </div>
-// </div>

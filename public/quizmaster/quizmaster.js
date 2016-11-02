@@ -11,34 +11,44 @@ var WebIO =  require('../../server/webIO');
 export default class Quizmaster extends React.Component{
     constructor(props){
         super(props)
-        this.state= {}
+        this.state= {};
         var socket = new WebSocket("ws://localhost:8000");
         this.webIO = new WebIO(socket)
-        this.state.subView = <RoomCreator webIO={this.webIO} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
+
+        this.state.subView = <RoomCreator webIO={this.webIO}/>
 
         this.webIO.on('endRound', () => {
             this.setState({subView:<ContNext  webIO={this.webIO} />})
         })
 
+        this.webIO.on('questions', (data) => {
+            this.setState({subView: <QuestionSelector 
+                questions={data.questions} 
+                webIO={this.webIO}/>
+            })
+        })
+
+        this.webIO.on('selectQuestion', (data) =>{
+            this.setState({subView: <QuestionApprover
+                webIO={this.webIO}
+                question={data.question}
+                />
+            })
+        })
+
+        this.webIO.on('roomUpdate', (data) => {
+            this.setState({subView: <TeampApprover
+                webIO={this.webIO}
+                id={data.room.id}
+                password={data.room.password}
+                teams={data.room.teams}
+                />
+            })
+        })
+
         socket.onerror = function(){
 
         }
-    }
-
-    handleStartRoomClick = function(){
-        this.setState({subView: <TeampApprover handleStartQuizClick={this.handleStartQuizClick.bind(this)} webIO={this.webIO}/>})
-    }
-
-    handleStartQuizClick = function(){
-        this.setState({subView: <QuestionSelector btnQuestionClicked={this.btnQuestionClicked.bind(this)} webIO={this.webIO}/>})
-    }
-
-    btnQuestionClicked = function(){
-        this.setState({subView: <QuestionApprover btnNextQuestionClicked={this.btnNextQuestionClicked.bind(this)} webIO={this.webIO}/>})
-    }
-
-    btnNextQuestionClicked = function(){
-        this.handleStartQuizClick();
     }
 
     render(){

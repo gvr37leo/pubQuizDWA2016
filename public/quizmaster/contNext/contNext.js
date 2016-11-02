@@ -8,11 +8,11 @@ export default class ContNext extends React.Component{
     }
 
     contBtnClicked(){
-
+        this.props.webIO.send('continue', {})
     }
 
     stopBtnClicked(){
-
+        this.props.webIO.send('stop', {})
     }
 
     render(){

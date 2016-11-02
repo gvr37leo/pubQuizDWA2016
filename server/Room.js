@@ -24,16 +24,31 @@ class Room{
         )
     }
 
-    updateQuestions(questions){
-        this.quizMasterWebIO.send('questions', { questions:questions})
-        for(var team of this.teams)team.webIO.send('questions', {})
+    startChooseQuestion(QuestionModel){
+        QuestionModel.find({}).lean().exec((err, questions) =>{
+            var randoms = [];
+            for(var i = 0; i < 3; i++){
+                randoms.push(questions[Math.floor(Math.random() * questions.length)])
+            }
+            this.selectableQuestions = randoms;
+            this.questionCount++;
+            this.resetTeams();
+
+            if(this.questionCount > 3){
+                this.quizMasterWebIO.send('endRound', {});
+                //score op scoreboard laten zien
+            }else{
+                this.quizMasterWebIO.send('questions', { questions:randoms})
+                for(var team of this.teams)team.webIO.send('questions', {})
+            }
+        })
     }
 
-    startquestion(){
+    selectQuestion(){
         for(var team of this.teams){
-            team.webIO.send('startquestion', this.currentQuestion)
+            team.webIO.send('selectQuestion', this.currentQuestion)
         }
-        this.quizMasterWebIO.send('startquestion', this.currentQuestion)
+        this.quizMasterWebIO.send('selectQuestion', this.currentQuestion)
     }
 
     findTeamIndex(id){

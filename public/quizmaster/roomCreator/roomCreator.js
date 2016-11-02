@@ -12,7 +12,6 @@ export default class RoomCreator extends React.Component{
         this.props.webIO.send('createRoom', {
             password:this.state.roomPassword
         })
-        this.props.handleStartRoomClick();
     }
 
     roomPasswordChange(event){
