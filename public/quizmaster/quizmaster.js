@@ -12,7 +12,11 @@ export default class Quizmaster extends React.Component{
     constructor(props){
         super(props)
         this.state= {}
-        var socket = new WebSocket("ws://localhost:8000");
+        // <QuestionSelector />
+        // <QuestionApprover />;
+        // <TeampApprover />
+        var socket = new WebSocket("ws://localhost:8000/");
+
         this.webIO = new WebIO(socket)
         this.state.subView = <RoomCreator webIO={this.webIO} handleStartRoomClick={this.handleStartRoomClick.bind(this)}/>
 

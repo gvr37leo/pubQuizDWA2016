@@ -1,3 +1,45 @@
+scoreboardjoin
+{
+	roomId
+}
+van scoreboard naar server
+acties:
+	server: 
+		als room bestaat:
+			stuur joinsucces {}
+		als room niet bestaat:
+			stuur notaroom {}
+
+
+joinsucces
+{
+}
+van server naar scoreboard
+van server naar team
+
+
+notaroom
+{
+}
+van server naar scoreboard
+
+
+createRoom
+{
+	password
+}
+van master naar server
+acties:
+	server:
+		maakt room aan
+
+
+
+
+
+OLD STUFF STARTS HERE
+
+
 startroom 
 {
 	wachtwoord
