@@ -2,6 +2,7 @@ class Room{
     constructor(quizMasterWebIO, password){
         this.quizMasterWebIO = quizMasterWebIO;
         this.teams = [];
+        this.scoreBoardWebIO;
         this.password = password;
         this.id = Math.floor(Math.random() * 1000);
 

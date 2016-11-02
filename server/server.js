@@ -8,7 +8,6 @@ var http = require('http');
 var bodyparser = require('body-parser')
 var WebIO = require('./webIO')
 var port = 8000;
-
 var dbName = 'pubquiz';
 
 var QuestionModel = require('./models/questionModel').model
@@ -38,7 +37,11 @@ wss.on('connection', function(socket){
     var roundStartFunc = (data) => {
         room.startChooseQuestion(QuestionModel);
         webIO.routeMap = states.selectingQuestion;
-        if(room.questionCount < room.numberOfQuestionsInRound)webIO.routeMap = states.selectingQuestion;
+        if(room.questionCount < room.numberOfQuestionsInRound){
+            webIO.routeMap = states.selectingQuestion;
+            room.questionCount = 0;
+            //add roundPoints
+        }
         else webIO.routeMap = states.stopContinue;
     }
 
@@ -76,6 +79,17 @@ wss.on('connection', function(socket){
                             console.log('probably quizmaster already disconnected')
                         }
                     }
+                }
+            },
+
+            scoreBoardLogin:(data) => {
+                room = roomMap[data.roomId]
+                if(room && room.password == data.password){
+                    room.scoreBoardWebIO = webIO;
+                    webIO.routeMap = states.listenToAnswersSB;
+                }
+                webIO.onclose = () => {
+
                 }
             }
         },
@@ -116,13 +130,11 @@ wss.on('connection', function(socket){
 
         stopContinue:{
             continue:(data) => {
-                room.questionCount = 0;
                 room.startChooseQuestion(QuestionModel);
                 webIO.routeMap = states.selectingQuestion;
             },
 
             stop:(data) => {
-                room.questionCount = 0;
                 webIO.routeMap = states.initial;
             }
         },
@@ -133,6 +145,16 @@ wss.on('connection', function(socket){
                 room.teams[index].answer = data.answer;
                 room.updateAnswers();
             }
+        },
+
+        listenToAnswersSB:{
+            sendanswer:(data) => {
+
+            }
+        },
+
+        listenToEndRound:{
+
         }
     }
 

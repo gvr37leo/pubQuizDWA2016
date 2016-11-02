@@ -6,6 +6,7 @@ class Team {
         this.answer;
         this.approved = false;
         this.score = 0;
+        this.roundPoints = 0;
     }
 
     serialize(){
