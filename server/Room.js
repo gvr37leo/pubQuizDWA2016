@@ -6,6 +6,7 @@ class Room{
         this.id = Math.floor(Math.random() * 1000);
 
         this.currentQuestion;
+        this.selectableQuestions = [];
         this.questionCount = 0;
     }
 
@@ -21,6 +22,11 @@ class Room{
                 room:this.serialize()
             }
         )
+    }
+
+    updateQuestions(questions){
+        this.quizMasterWebIO.send('questions', { questions:questions})
+        for(var team of this.teams)team.webIO.send('questions', {})
     }
 
     startquestion(){
@@ -46,6 +52,13 @@ class Room{
             room.teams.push(team.serialize())
         }
         return room
+    }
+
+    resetTeams(){
+        for(var team of this.teams){
+            team.approved = false;
+            team.answer = '';
+        }
     }
 }
 

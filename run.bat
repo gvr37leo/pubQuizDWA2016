@@ -17,5 +17,6 @@ popd
 pushd scoreboard
 start webpack --watch
 popd
+popd
 ::start webpack-dev-server --inline --hot --port 8001 --content-base
 ::start node server/server.js

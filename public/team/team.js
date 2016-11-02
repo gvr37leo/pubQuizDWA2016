@@ -1,6 +1,7 @@
 import React from "react";
 import RoomPicker from './roomPicker/roomPicker';
 import QuestionSubmitter from './questionSubmitter/questionSubmitter';
+import WaitingRoom from './waitingRoom/waitingRoom'
 var WebIO =  require('../../server/webIO');
 
 export default class Team extends React.Component{
@@ -16,10 +17,19 @@ export default class Team extends React.Component{
             this.webIO = new WebIO(socket);
             this.setState({subView:<RoomPicker webIO={this.webIO} loginBtnClicked={this.loginBtnClicked.bind(this)}/>});
         }
+
+        this.webIO.on('startquestion', (data) => {
+            this.setState({subView:<QuestionSubmitter question={data.question} webIO={this.webIO}/>});
+        })
+
+        this.webIO.on('questions', (data) => {
+            this.setState({subView:<WaitingRoom webIO={this.webIO}/>});
+        })
+        
     }
 
     loginBtnClicked(){
-        this.setState({subView:<QuestionSubmitter webIO={this.webIO}/>});
+        this.setState({subView:<WaitingRoom webIO={this.webIO}/>});
     }
 
     render(){

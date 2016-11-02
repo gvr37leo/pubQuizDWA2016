@@ -10,8 +10,12 @@ var bodyParser = require('body-parser')
 var WebIO = require('./webIO')
 var port = 8000;
 
-var dbName = 'quiz';
-mongoose.connect('mongodb://localhost/' + dbName);
+var dbName = 'pubquiz';
+
+var QuestionModel = require('./models/questionModel').model
+mongoose.connect('mongodb://localhost/' + dbName, (err) => {
+    console.log('connected to mongo')
+});
 mongoose.Promise = global.Promise;
 
 app.use(bodyParser.json());
@@ -23,8 +27,9 @@ app.listen(port, () => console.log('listening on ' + port));
 
 var Room = require('./Room')
 var Team = require('./Team')
+
+
 var roomMap = {};
-var questions = [{id:1, question:'wie', category:'culture'}, {id:2, question:'wat', category:'sport'}, {id:3, question:'waar', category:'science'}]
 
 app.ws('/',function(ws,req){
 	console.log('normal con');
@@ -103,6 +108,7 @@ app.ws('/',function(ws,req){
           team.answer = '';
       }
       if(room.questionCount > 3){
+					webIO.send('endRound', {})
           //continue or restart
       }else{
           webIO.send('questions', {
