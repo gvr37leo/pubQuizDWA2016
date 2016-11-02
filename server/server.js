@@ -32,7 +32,6 @@ var Team = require('./Team')
 var roomMap = {};
 
 app.ws('/',function(ws,req){
-	console.log('normal con');
   var webIO = new WebIO(ws);
   var room;
 
