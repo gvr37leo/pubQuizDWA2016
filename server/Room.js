@@ -6,6 +6,7 @@ class Room{
         this.id = Math.floor(Math.random() * 1000);
 
         this.currentQuestion;
+        this.numberOfQuestionsInRound = 3;
         this.selectableQuestions = [];
         this.questionCount = 0;
     }
@@ -34,7 +35,7 @@ class Room{
             this.questionCount++;
             this.resetTeams();
 
-            if(this.questionCount > 3){
+            if(this.questionCount > this.numberOfQuestionsInRound){
                 this.quizMasterWebIO.send('endRound', {});
                 //score op scoreboard laten zien
             }else{

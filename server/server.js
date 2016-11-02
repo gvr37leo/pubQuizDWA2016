@@ -38,6 +38,8 @@ wss.on('connection', function(socket){
     var roundStartFunc = (data) => {
         room.startChooseQuestion(QuestionModel);
         webIO.routeMap = states.selectingQuestion;
+        if(room.questionCount < room.numberOfQuestionsInRound)webIO.routeMap = states.selectingQuestion;
+        else webIO.routeMap = states.stopContinue;
     }
 
     var states = {
