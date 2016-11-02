@@ -18,7 +18,7 @@ export default class Quizmaster extends React.Component{
         this.state.subView = <RoomCreator webIO={this.webIO}/>
 
         this.webIO.on('endRound', () => {
-            this.setState({subView:<ContNext  webIO={this.webIO} />})
+            this.setState({subView:<ContNext stopBtnClicked={this.stopBtnClicked.bind(this)} webIO={this.webIO} />})
         })
 
         this.webIO.on('questions', (data) => {
@@ -49,6 +49,10 @@ export default class Quizmaster extends React.Component{
         socket.onerror = function(){
 
         }
+    }
+
+    stopBtnClicked = function(){
+        this.setState({subView: <RoomCreator webIO={this.webIO}/>})
     }
 
     render(){

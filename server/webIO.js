@@ -12,6 +12,10 @@ class WebIO{
                 console.log('404: ' + parsedData.route)
             }
         }
+
+        socket.onclose = () =>{
+            this.onclose();
+        }
     }
 
     on(route, action){//actions need to be passed using an arrow function or functions binded with .bind(this)
@@ -21,6 +25,10 @@ class WebIO{
     send(route, value){//value is object en geserialized
         value.route = route;
         this.socket.send(JSON.stringify(value))
+    }
+
+    onclose(){
+
     }
 
     close(){

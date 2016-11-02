@@ -13,6 +13,7 @@ export default class ContNext extends React.Component{
 
     stopBtnClicked(){
         this.props.webIO.send('stop', {})
+        this.props.stopBtnClicked();
     }
 
     render(){

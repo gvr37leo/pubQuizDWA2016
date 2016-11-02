@@ -14,7 +14,6 @@ export default class QuestionApprover extends React.Component{
 
     btnNextQuestionClicked(){
         this.props.webIO.send('roundStart', {});
-        this.props.btnNextQuestionClicked();
     }
 
     render(){
