@@ -1,0 +1,161 @@
+scoreboardjoin
+{
+	roomId
+}
+van scoreboard naar server
+acties:
+	server: 
+		als room bestaat:
+			stuur joinsucces {}
+		als room niet bestaat:
+			stuur notaroom {}
+
+
+joinsucces
+{
+}
+van server naar scoreboard
+van server naar team
+
+
+notaroom
+{
+}
+van server naar scoreboard
+
+
+createRoom
+{
+	password
+}
+van master naar server
+acties:
+	server:
+		maakt room aan
+
+
+
+
+
+OLD STUFF STARTS HERE
+
+
+startroom 
+{
+	wachtwoord
+}
+van master naar server
+actions:
+	server: creates room
+	server: voegt master toe aan gemaakte room
+
+
+joinroom
+{
+	wachtwoord
+	roomid
+}
+van teams naar server
+actions:
+	server: voegt team toe aan room
+
+
+teamchanged
+{
+	gameobject || teams[]
+}
+server naar scoreboard
+server naar quizmaster
+actions:
+	scoreboard and master updates
+
+
+teamdenied
+{
+	teamid
+}
+master naar server
+actions:
+	server verstuurd teamchanged
+
+
+startround
+{
+}
+master naar server
+actions:
+	server verstuurd sendquestion
+
+
+sendquestion
+{
+    question[]
+}
+server naar master
+
+
+selectquestion
+{
+    questionid
+}
+master naar server
+actions:
+	server verstuurd startquestion
+
+
+startquestion
+{
+	question
+}
+server naar scoreboard
+server naar teams
+server naar master
+
+
+sendanswer
+{
+	answer
+}
+team naar server
+actions:
+	server verstuurd answersubmitted
+	server verstuurd answerchanged
+
+answer approved
+{
+	teamid
+}
+van master naar server
+
+
+answerchanged
+{
+	teamid
+	answer
+}
+van server naar master
+# als een antwoord wordt ingestuurd, met antwoord
+
+answersubmitted
+{
+	teamid
+}
+van server naar scoreboard
+# als een antwoord wordt ingestuurd, zonder antwoord
+
+endquestion
+{
+}
+van master naar server
+
+continue
+{
+}
+van master naar server
+# start nieuwe ronde
+
+stop
+{
+}
+van master naar server
+# stopt quiz
