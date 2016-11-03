@@ -37,13 +37,7 @@ export default class Quizmaster extends React.Component{
         })
 
         this.webIO.on('roomUpdate', (data) => {
-            this.setState({subView: <TeampApprover
-                webIO={this.webIO}
-                id={data.room.id}
-                password={data.room.password}
-                teams={data.room.teams}
-                />
-            })
+            this.setState({subView: <TeampApprover webIO={this.webIO} room={data.room} /> })
         })
 
         socket.onerror = function(){

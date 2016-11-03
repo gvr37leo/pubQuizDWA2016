@@ -19,7 +19,6 @@ export default class RoomPicker extends React.Component{
             roomId:this.state.roomId,
             password: this.state.roomPassword,
         })
-        this.props.loginBtnClicked();
     }
 
     render(){

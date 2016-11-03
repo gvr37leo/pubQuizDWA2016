@@ -14,7 +14,9 @@ class Team {
             id:this.id,
             name: this.name,
             answer: this.answer,
-            approved:this.approved
+            approved:this.approved,
+            score:this.score,
+            roundPoints:this.roundPoints
         }
     }
 }

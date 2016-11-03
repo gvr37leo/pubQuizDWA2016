@@ -12,8 +12,9 @@ export default class TeamApprover extends React.Component{
     }
 
     render(){
+        var room = this.props.room
         var teamElements = [];
-        for(var team of this.props.teams){
+        for(var team of room.teams){
             teamElements.push(<TeamPanel key={team.id} team={team} webIO={this.props.webIO}/>);
         }
         return(
@@ -24,11 +25,11 @@ export default class TeamApprover extends React.Component{
                             <button onClick={this.goBtnClicked.bind(this)} className="btn btn-success" style={{marginBottom:'10px'}}>Go!</button>
                             <div style={{display:'flex'}}>
                                 <label>Room ID: </label>
-                                <p>{this.props.id}</p>
+                                <p>{room.id}</p>
                             </div>
                             <div style={{display:'flex'}}>
                                 <label>Password: </label>
-                                <p>{this.props.password}</p>
+                                <p>{room.password}</p>
                             </div>
                         </div>
                     </div>

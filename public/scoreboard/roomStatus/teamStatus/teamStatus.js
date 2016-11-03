@@ -10,9 +10,16 @@ export default class TeamDisplayer extends React.Component{
             <div className='panel panel-primary' style={{marginRight:'40px', minWidth:'150px'}}>
                 <div className="panel-heading">{this.props.team.name}</div>
                 <div className="panel-body">
-                    {this.props.team.name}
-                    {this.props.team.roundPoints}
-                    {this.props.team.score}
+                    <div style={{display:'flex'}}>
+                        <label>Round points: </label>
+                        <p>{this.props.team.roundPoints}</p>
+                    </div>
+                    <div style={{display:'flex'}}>
+                        <label>correct questions: </label>
+                        <p>{this.props.team.score}</p>
+                    </div>
+                    {}
+                    {}
                 </div>
             </div>
         )

@@ -15,21 +15,21 @@ export default class ScoreDisplay extends React.Component{
             }
         }else{
             room = {};
+            room.currentQuestion = {};
         }
-
+        if(!room.currentQuestion)room.currentQuestion = {};
         return(
             <div style={{margin:'20px'}}>
                 <div style={{display:'flex', marginBottom:'20px'}}>
                     <div className='panel panel-primary'>
                         <div className="panel-body">
-                            <button className="btn btn-success" style={{marginBottom:'10px'}}>Next</button>
                             <div style={{display:'flex'}}>
                                 <label>Question: </label>
-                                <p>{room.question}</p>
+                                <p>{room.currentQuestion.question}</p>
                             </div>
                             <div style={{display:'flex'}}>
                                 <label>Category: </label>
-                                <p>{room.category}</p>
+                                <p>{room.currentQuestion.category}</p>
                             </div>
                             <div style={{display:'flex'}}>
                                 <label>Question #: </label>

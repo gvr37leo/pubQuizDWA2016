@@ -12,6 +12,7 @@ var dbName = 'pubquiz';
 
 var QuestionModel = require('./models/questionModel').model
 mongoose.connect('mongodb://localhost/' + dbName, (err) => {
+    if(err)throw err;
     console.log('connected to mongo')
 });
 mongoose.Promise = global.Promise;
@@ -35,14 +36,17 @@ wss.on('connection', function(socket){
     var room;
 
     var roundStartFunc = (data) => {
-        room.startChooseQuestion(QuestionModel);
-        webIO.routeMap = states.selectingQuestion;
-        if(room.questionCount < room.numberOfQuestionsInRound){
+        room.startChooseQuestion(QuestionModel).then((result) => {
             webIO.routeMap = states.selectingQuestion;
-            room.questionCount = 0;
-            //add roundPoints
-        }
-        else webIO.routeMap = states.stopContinue;
+            if(room.questionCount > room.numberOfQuestionsInRound){
+                webIO.routeMap = states.stopContinue;
+                room.questionCount = 0;
+                //add roundPoints
+            }
+            else{
+                webIO.routeMap = states.selectingQuestion;
+            }
+        })
     }
 
     var states = {
@@ -86,7 +90,7 @@ wss.on('connection', function(socket){
                 room = roomMap[data.roomId]
                 if(room && room.password == data.password){
                     room.scoreBoardWebIO = webIO;
-                    webIO.routeMap = states.listenToAnswersSB;
+                    room.updateScoreBoard()
                 }
                 webIO.onclose = () => {
 
@@ -100,6 +104,7 @@ wss.on('connection', function(socket){
                 room.teams[index].webIO.close();
                 room.teams.splice(index, 1)
                 room.updateQuizMaster();
+                room.updateScoreBoard()
             },
 
             roundStart:roundStartFunc,
@@ -123,6 +128,7 @@ wss.on('connection', function(socket){
                 room.teams[index].approved = true;
                 room.teams[index].score++;
                 room.updateAnswers();
+                room.updateScoreBoard()
             },
 
             roundStart:roundStartFunc
@@ -146,16 +152,6 @@ wss.on('connection', function(socket){
                 room.updateAnswers();
             }
         },
-
-        listenToAnswersSB:{
-            sendanswer:(data) => {
-
-            }
-        },
-
-        listenToEndRound:{
-
-        }
     }
 
     webIO.routeMap = states.initial;
