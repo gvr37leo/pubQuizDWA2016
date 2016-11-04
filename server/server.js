@@ -73,8 +73,9 @@ app.ws('/', function(socket,req){
                 room.updateScoreBoard();
             }
             else{
-                room.quizMasterWebIO.send('questions', { questions:room.selectableQuestions})
-                for(var team of room.teams)team.webIO.send('questions', {})
+                room.quizMasterWebIO.send('questions', { questions:room.selectableQuestions});
+                for(var team of room.teams)team.webIO.send('questions', {});
+                room.scoreBoardWebIO.send('questions',{room:room.serialize()});
                 webIO.routeMap = states.selectingQuestion;
             }
             room.questionCount++;
@@ -159,7 +160,7 @@ app.ws('/', function(socket,req){
                 room.teams[index].approved = true;
                 room.teams[index].score++;
                 room.updateAnswers();
-                room.updateScoreBoard()
+                room.updateScoreBoard();
             },
 
             roundStart:roundStartFunc

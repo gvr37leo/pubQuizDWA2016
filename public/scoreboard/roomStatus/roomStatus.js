@@ -11,7 +11,7 @@ export default class ScoreDisplay extends React.Component{
         var teamElements = [];
         if(room){
             for(var team of room.teams){
-                teamElements.push(<TeamStatus key={team.id} team={team} webIO={this.props.webIO}/>);
+                teamElements.push(<TeamStatus showAnswers={this.props.showAnswers} key={team.id} team={team} webIO={this.props.webIO}/>);
             }
         }else{
             room = {};

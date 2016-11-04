@@ -11,7 +11,10 @@ export default class Scoreboard extends React.Component{
         this.state = {subView:<RoomPicker webIO={this.webIO} />};
         
         this.webIO.on('roomChanged', (data) => {
-            this.setState({subView:<RoomStatus room={data.room} />})
+            this.setState({subView:<RoomStatus showAnswers={false} room={data.room} />})
+        })
+        this.webIO.on('questions', (data) => {
+            this.setState({subView:<RoomStatus showAnswers={true} room={data.room}/>});
         })
     }
 
