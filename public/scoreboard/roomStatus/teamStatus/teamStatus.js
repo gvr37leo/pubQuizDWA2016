@@ -18,8 +18,6 @@ export default class TeamDisplayer extends React.Component{
                         <label>correct questions: </label>
                         <p>{this.props.team.score}</p>
                     </div>
-                    {}
-                    {}
                 </div>
             </div>
         )

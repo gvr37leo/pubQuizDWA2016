@@ -9,13 +9,17 @@ var bodyparser = require('body-parser')
 var WebIO = require('./webIO')
 var port = 8000;
 var dbName = 'pubquiz';
-
-var QuestionModel = require('./models/questionModel').model
+mongoose.Promise = global.Promise;
+var QuestionModel = require('./models/QuestionModel').model
+var categorys;
+QuestionModel.distinct('category').lean().exec((err, categorysArray) =>{
+    categorys = categorysArray;
+})
 mongoose.connect('mongodb://localhost/' + dbName, (err) => {
     if(err)throw err;
     console.log('connected to mongo')
 });
-mongoose.Promise = global.Promise;
+
 
 var server = http.createServer();
 var wss = new ws.Server({server: server});
@@ -36,16 +40,27 @@ wss.on('connection', function(socket){
     var room;
 
     var roundStartFunc = (data) => {
-        room.startChooseQuestion(QuestionModel).then((result) => {
+        room.changeSelectableQuestion(QuestionModel).then((result) => {
             webIO.routeMap = states.selectingQuestion;
-            if(room.questionCount > room.numberOfQuestionsInRound){
+            if(room.questionCount >= room.numberOfQuestionsInRound){//round over
                 webIO.routeMap = states.stopContinue;
+                room.quizMasterWebIO.send('endRound', {});
                 room.questionCount = 0;
-                //add roundPoints
+                room.oldQuestions = [];
+                room.currentCategorys = getRandomInts(3,0,categorys.length).map((entry) =>{
+                    return categorys[entry]
+                })
+                for(var team of room.teams)team.score = 0;
+                room.addRoundPoints();
+                room.updateScoreBoard();
             }
             else{
+                room.quizMasterWebIO.send('questions', { questions:room.selectableQuestions})
+                for(var team of room.teams)team.webIO.send('questions', {})
                 webIO.routeMap = states.selectingQuestion;
             }
+            room.questionCount++;
+            room.resetTeams();
         })
     }
 
@@ -53,6 +68,10 @@ wss.on('connection', function(socket){
         initial:{
             createRoom: (data) => {
                 room = new Room(webIO, data.password);
+                room.currentCategorys = getRandomInts(3,0,categorys.length).map((entry) =>{
+                    console.log(entry);
+                    return categorys[entry]
+                })
                 webIO.roomId = room.id
                 roomMap[room.id] = room;
                 room.updateQuizMaster();
@@ -136,7 +155,7 @@ wss.on('connection', function(socket){
 
         stopContinue:{
             continue:(data) => {
-                room.startChooseQuestion(QuestionModel);
+                roundStartFunc()
                 webIO.routeMap = states.selectingQuestion;
             },
 
@@ -156,3 +175,21 @@ wss.on('connection', function(socket){
 
     webIO.routeMap = states.initial;
 })
+
+function getRandomInts(amount, start, end){
+    if(amount > end-start){
+        throw Error("No you are not allowed to do this");
+    }
+    var startList = [];
+    for(var i = start;i<end;i++){
+        startList.push(i);
+    }
+    var intList = [];
+    
+    for(var i = 0; i < amount; i++){
+        var randomInt = Math.floor(Math.random()*startList.length);
+        intList.push(startList[randomInt]);
+        startList.splice(randomInt, 1);
+    }
+    return intList;
+}

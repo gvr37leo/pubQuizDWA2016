@@ -9,6 +9,8 @@ class Room{
         this.currentQuestion;
         this.numberOfQuestionsInRound = 3;
         this.selectableQuestions = [];
+        this.oldQuestions = [];
+        this.currentCategorys = [];
         this.questionCount = 0;
     }
 
@@ -24,27 +26,25 @@ class Room{
         this.quizMasterWebIO.send('answerchanged',{room:this.serialize()})
     }
 
-    startChooseQuestion(QuestionModel){
-        return new Promise((resolve, reject) => {
-            QuestionModel.find({}).lean().exec((err, questions) =>{
-                var randoms = [];
-                for(var i = 0; i < 3; i++){
-                    randoms.push(questions[Math.floor(Math.random() * questions.length)])
-                }
-                this.selectableQuestions = randoms;
-                this.questionCount++;
-                this.resetTeams();
-
-                if(this.questionCount > this.numberOfQuestionsInRound){
-                    this.quizMasterWebIO.send('endRound', {});
-                    //score op scoreboard laten zien
-                }else{
-                    this.quizMasterWebIO.send('questions', { questions:randoms})
-                    for(var team of this.teams)team.webIO.send('questions', {})
-                }
-                resolve();
-            })
-        })
+    changeSelectableQuestion(QuestionModel){
+        this.selectableQuestions = [];
+        var querys = [];
+        
+        for(var category of this.currentCategorys){
+            ((category) =>{//iife zodat category bewaard blijft
+                querys.push(new Promise((resolve, reject) =>{
+                    QuestionModel.find({'category':category, 'question':{$nin:this.oldQuestions}}).lean().exec((err, questions) =>{
+                        if(err) throw err;
+                        var question = questions[Math.floor(Math.random() * questions.length)]
+                        this.selectableQuestions.push(question)
+                        this.oldQuestions.push(question.question);
+                        resolve();
+                    })
+                }))
+            })(category)
+            
+        }
+        return Promise.all(querys)
     }
 
     selectQuestion(){
@@ -81,6 +81,18 @@ class Room{
             team.answer = '';
         }
     }
+
+    addRoundPoints(){
+        this.teams.sort((a, b) =>{
+            return a.score - b.score
+        })
+        var points = [4,2,1]
+        for(var i = 0; i < this.teams.length; i++){
+            if(i < points.length) this.teams[i].roundPoints += points[i];
+            else this.teams[i].roundPoints += 0.1;
+        }
+    }
+
 }
 
 module.exports = Room;

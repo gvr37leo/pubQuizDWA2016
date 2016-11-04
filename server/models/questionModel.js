@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var questionSchema = new Schema({
-    question:String,
-    answer:String,
     category:String,
+    question:String,
+    answer:String
 });
 
 var Question = mongoose.model('question', questionSchema);
