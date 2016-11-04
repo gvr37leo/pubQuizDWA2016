@@ -3,6 +3,7 @@ var mongoose = require('mongoose')
 var express = require('express')
 var app = express();
 var expressWs = require('express-ws')(app);
+var session = require('express-session');
 var ws = require('ws');
 var http = require('http');
 var bodyparser = require('body-parser')
@@ -20,24 +21,41 @@ mongoose.connect('mongodb://localhost/' + dbName, (err) => {
     console.log('connected to mongo')
 });
 
-
-var server = http.createServer();
-var wss = new ws.Server({server: server});
+app.use(session({resave: true, saveUninitialized: true, secret: 'banaan', cookie: { maxAge: 600000 }}));
+app.get('*',function(req,res,next){
+	req.session.test = "Test1";
+	next();
+});
 app.use('/', express.static('../public/team'));
 app.use('/scoreboard', express.static('../public/scoreboard'));
 app.use('/quizmaster', express.static('../public/quizmaster'));
-server.on('request', app);
-server.listen(port, () => console.log('listening on ' + port))
+
+app.listen(port, () => console.log('listening on ' + port))
 
 var Room = require('./Room')
 var Team = require('./Team')
 
-
 var roomMap = {};
 
-wss.on('connection', function(socket){
-    var webIO = new WebIO(socket);
-    var room;
+app.ws('/', function(socket,req){
+		var room;
+		for(var item in roomMap){
+			for(var team of roomMap[item].teams){
+				if(team.webIO.sessionID==req.sessionID){
+					room = roomMap[item];
+					team.webIO.socket = socket;
+					team.webIO.setupSocket();
+					if(team.webIO.lastMessage=="NOPE"){
+						team.webIO.send('questions',{});
+					}else{
+						team.webIO.sendLastMessage();
+					}
+					return;
+				}
+			}
+		}
+		var webIO = new WebIO(socket);
+		webIO.sessionID = req.sessionID;
 
     var roundStartFunc = (data) => {
         room.changeSelectableQuestion(QuestionModel).then((result) => {
@@ -69,7 +87,6 @@ wss.on('connection', function(socket){
             createRoom: (data) => {
                 room = new Room(webIO, data.password);
                 room.currentCategorys = getRandomInts(3,0,categorys.length).map((entry) =>{
-                    console.log(entry);
                     return categorys[entry]
                 })
                 webIO.roomId = room.id
@@ -83,7 +100,7 @@ wss.on('connection', function(socket){
                     delete roomMap[webIO.roomId]
                 }
             },
-            
+
             login:(data) => {
                 room = roomMap[data.roomId]
                 if(room && room.password == data.password){
@@ -91,17 +108,11 @@ wss.on('connection', function(socket){
                     room.teams.push(team);
                     webIO.teamId = team.id;
                     room.updateQuizMaster();
-                    webIO.routeMap = states.listenToAnswers; 
-                    webIO.onclose = () => {
-                        var index = room.findTeamIndex(webIO.teamId)
-                        var team = room.teams[index];
-                        room.teams.splice(index, 1);
-                        try{//doc zegt dat write failures hierdoor niet gecatched worden en de ingebouwde error handling gebruikt moet worden
-                            room.updateQuizMaster();//disconnecting clients are able to call a dead quizmastersocket causing an error here
-                        }catch(e){
-                            console.log('probably quizmaster already disconnected')
-                        }
-                    }
+                    webIO.routeMap = states.listenToAnswers;
+                    room.updateScoreBoard();
+
+                }else{
+                    webIO.close();
                 }
             },
 
@@ -137,6 +148,7 @@ wss.on('connection', function(socket){
             selectquestion:(data) => {
                 room.currentQuestion = room.selectableQuestions[data.index];
                 room.selectQuestion();
+                room.updateAnswers();
                 webIO.routeMap = states.approvingQuestions;
             }
         },
@@ -161,20 +173,30 @@ wss.on('connection', function(socket){
 
             stop:(data) => {
                 webIO.routeMap = states.initial;
+								for(team of room.teams){
+										team.webIO.close();
+								}
+								delete roomMap[webIO.roomId];
             }
         },
 
         listenToAnswers:{
             sendanswer:(data) => {
-                var index = room.findTeamIndex(webIO.teamId)
-                room.teams[index].answer = data.answer;
-                room.updateAnswers();
+                var index = room.findTeamIndex(webIO.teamId);
+								if(room.teams[index].answer!=data.answer){
+									if(room.teams[index].approved){
+										room.teams[index].score--;
+									}
+									room.teams[index].approved = false;
+	                room.teams[index].answer = data.answer;
+	                room.updateAnswers();
+								}
             }
-        },
+        }
     }
 
     webIO.routeMap = states.initial;
-})
+});
 
 function getRandomInts(amount, start, end){
     if(amount > end-start){

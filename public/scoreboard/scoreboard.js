@@ -6,7 +6,7 @@ var WebIO =  require('../../server/webIO');
 export default class Scoreboard extends React.Component{
     constructor(){
         super()
-        var socket = new WebSocket("ws://localhost:8000");
+        var socket = new WebSocket("ws://localhost:8000/");
         this.webIO = new WebIO(socket);
         this.state = {subView:<RoomPicker webIO={this.webIO} />};
         

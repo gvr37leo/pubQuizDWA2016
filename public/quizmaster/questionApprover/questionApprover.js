@@ -6,7 +6,6 @@ export default class QuestionApprover extends React.Component{
         super(props)
         this.state = {}
         this.state.teams = [];
-
         this.props.webIO.on('answerchanged', (data) => {
             this.setState({teams:data.room.teams})
         })
@@ -31,6 +30,10 @@ export default class QuestionApprover extends React.Component{
                             <div style={{display:'flex'}}>
                                 <label>Question: </label>
                                 <p>{this.props.question}</p>
+                            </div>
+														<div style={{display:'flex'}}>
+                                <label>Answer: </label>
+                                <p>{this.props.answer}</p>
                             </div>
 
                         </div>
