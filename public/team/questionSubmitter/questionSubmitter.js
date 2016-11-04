@@ -11,9 +11,11 @@ export default class QuestionSubmitter extends React.Component{
     }
 
     answerBtnClicked(){
+				console.log('Sending answer');
         this.props.webIO.send('sendanswer',{
             'answer':this.state.answer
         })
+				console.log('Answer send');
     }
 
     render(){
