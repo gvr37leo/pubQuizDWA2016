@@ -3,6 +3,7 @@ class Room{
         this.quizMasterWebIO = quizMasterWebIO;
         this.teams = [];
         this.scoreBoardWebIO;
+        this.timeout = 3;
         this.password = password;
         this.id = Math.floor(Math.random() * 1000);
 
@@ -48,11 +49,12 @@ class Room{
     }
 
     selectQuestion(){
+        this.currentQuestion.time = this.timeout;
         for(var team of this.teams){
-            team.webIO.send('selectQuestion', this.currentQuestion)
+            team.webIO.send('selectQuestion', {time: this.currentQuestion.time, question: this.currentQuestion.question});
         }
-        this.quizMasterWebIO.send('selectQuestion', this.currentQuestion)
-        this.updateScoreBoard()
+        this.quizMasterWebIO.send('selectQuestion', this.currentQuestion);
+        this.updateScoreBoard();
     }
 
     findTeamIndex(id){

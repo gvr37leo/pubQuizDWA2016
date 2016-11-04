@@ -3,7 +3,8 @@ import React from 'react';
 export default class QuestionSubmitter extends React.Component{
     constructor(props){
         super(props)
-        this.state = {};
+        this.state = {allowedToSend: true};
+				setTimeout(function() { this.setState({allowedToSend:false}); }.bind(this), this.props.time*1000);
     }
 
     answerChange(event){
@@ -11,12 +12,12 @@ export default class QuestionSubmitter extends React.Component{
     }
 
     answerBtnClicked(){
-				console.log('Sending answer');
-        this.props.webIO.send('sendanswer',{
-            'answer':this.state.answer
-        })
-				console.log('Answer send');
-    }
+				if(this.state.allowedToSend){
+		      this.props.webIO.send('sendanswer',{
+		          'answer':this.state.answer
+		      });
+				}
+		}
 
     render(){
         return(
@@ -25,7 +26,7 @@ export default class QuestionSubmitter extends React.Component{
                     <div className="panel-body">
                         <p>{this.props.question}</p>
                         <input value={this.state.answer} onChange={this.answerChange.bind(this)} type="text" placeholder='Answer' className="form-control"/>
-                        <button onClick={this.answerBtnClicked.bind(this)} className="btn btn-default">Answer</button>
+                        <button disabled={!this.state.allowedToSend} onClick={this.answerBtnClicked.bind(this)} className="btn btn-default">Answer</button>
                     </div>
                 </div>
             </div>

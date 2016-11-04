@@ -19,7 +19,7 @@ export default class Team extends React.Component{
         }
 
         this.webIO.on('selectQuestion', (data) => {
-            this.setState({subView:<QuestionSubmitter question={data.question} webIO={this.webIO}/>});
+            this.setState({subView:<QuestionSubmitter question={data.question} webIO={this.webIO} time={data.time}/>});
         })
 
         this.webIO.on('questions', (data) => {

@@ -102,7 +102,9 @@ app.ws('/', function(socket,req){
                             console.log('probably quizmaster already disconnected')
                         }
                     }*/
-                }
+                }else{
+									webIO.close();
+								}
             },
 
             scoreBoardLogin:(data) => {

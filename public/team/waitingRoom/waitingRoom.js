@@ -15,6 +15,9 @@ export default class WaitingRoom extends React.Component{
                     <div className="panel-body">                        
                         <p>Wait for quizmaster to select a question</p>
                     </div>
+										<div className="panel-body"><center>
+												<img src="./loading_spinner.gif" alt=""/></center>
+										</div>
                 </div>
             </div>
         )
