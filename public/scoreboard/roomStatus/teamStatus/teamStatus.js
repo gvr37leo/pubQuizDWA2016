@@ -20,7 +20,7 @@ export default class TeamDisplayer extends React.Component{
                 </div>
             </div>
             if(this.props.team.approved){
-                style = 'succes';
+                style = 'success';
             }
         }
         return(
