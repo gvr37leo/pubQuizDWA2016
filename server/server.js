@@ -38,24 +38,24 @@ var Team = require('./Team')
 var roomMap = {};
 
 app.ws('/', function(socket,req){
-		var room;
-		for(var item in roomMap){
-			for(var team of roomMap[item].teams){
-				if(team.webIO.sessionID==req.sessionID){
-					room = roomMap[item];
-					team.webIO.socket = socket;
-					team.webIO.setupSocket();
-					if(team.webIO.lastMessage=="NOPE"){
-						team.webIO.send('questions',{});
-					}else{
-						team.webIO.sendLastMessage();
-					}
-					return;
-				}
-			}
-		}
-		var webIO = new WebIO(socket);
-		webIO.sessionID = req.sessionID;
+    var room;
+    for(var item in roomMap){
+        for(var team of roomMap[item].teams){
+            if(team.webIO.sessionID==req.sessionID){
+                room = roomMap[item];
+                team.webIO.socket = socket;
+                team.webIO.setupSocket();
+                if(team.webIO.lastMessage=="NOPE"){
+                    team.webIO.send('questions',{});
+                }else{
+                    team.webIO.sendLastMessage();
+                }
+                return;
+            }
+        }
+    }
+    var webIO = new WebIO(socket);
+    webIO.sessionID = req.sessionID;
 
     var roundStartFunc = (data) => {
         room.changeSelectableQuestion(QuestionModel).then((result) => {
@@ -104,7 +104,7 @@ app.ws('/', function(socket,req){
 
             login:(data) => {
                 room = roomMap[data.roomId]
-                if(room && room.password == data.password){
+                if(room && room.password == data.password && isValueUnique(room.teams, data.name, team => team.name)){
                     var team = new Team(data.name, webIO);
                     room.teams.push(team);
                     webIO.teamId = team.id;
@@ -174,24 +174,24 @@ app.ws('/', function(socket,req){
 
             stop:(data) => {
                 webIO.routeMap = states.initial;
-								for(team of room.teams){
-										team.webIO.close();
-								}
-								delete roomMap[webIO.roomId];
+                for(team of room.teams){
+                        team.webIO.close();
+                }
+                delete roomMap[webIO.roomId];
             }
         },
 
         listenToAnswers:{
             sendanswer:(data) => {
                 var index = room.findTeamIndex(webIO.teamId);
-								if(room.teams[index].answer!=data.answer){
-									if(room.teams[index].approved){
-										room.teams[index].score--;
-									}
-									room.teams[index].approved = false;
-	                room.teams[index].answer = data.answer;
-	                room.updateAnswers();
-								}
+                if(room.teams[index].answer!=data.answer && data.answer){
+                    if(room.teams[index].approved){
+                        room.teams[index].score--;
+                    }
+                    room.teams[index].approved = false;
+                    room.teams[index].answer = data.answer;
+                    room.updateAnswers();
+                }
             }
         }
     }
@@ -215,4 +215,9 @@ function getRandomInts(amount, start, end){
         startList.splice(randomInt, 1);
     }
     return intList;
+}
+
+function isValueUnique(array, value, callback){
+    for(var entry of array)if(callback(entry) == value)return false
+    return true;
 }
