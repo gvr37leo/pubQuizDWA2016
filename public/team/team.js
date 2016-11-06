@@ -12,10 +12,17 @@ export default class Team extends React.Component{
         this.webIO = new WebIO(socket);
         this.state.subView = <RoomPicker webIO={this.webIO} loginBtnClicked={this.loginBtnClicked.bind(this)}/>
 
-        socket.onclose = (e) => {
-            socket = new WebSocket("ws://localhost:8000/");
-            this.webIO = new WebIO(socket);
+        var reconnect = () =>{
+            console.log('trying to reconnect')
+            this.webIO.socket = new WebSocket("ws://localhost:8000/");
+            this.webIO.setupSocket();
+            this.webIO.socket.onclose = socket.onclose;
             this.setState({subView:<RoomPicker webIO={this.webIO} loginBtnClicked={this.loginBtnClicked.bind(this)}/>});
+        }
+
+        socket.onclose = (e) => {
+            console.log('disconnected')
+            setTimeout(reconnect, 2500);
         }
 
         this.webIO.on('selectQuestion', (data) => {

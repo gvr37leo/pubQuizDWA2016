@@ -75,7 +75,7 @@ app.ws('/', function(socket,req){
             else{
                 room.quizMasterWebIO.send('questions', { questions:room.selectableQuestions});
                 for(var team of room.teams)team.webIO.send('questions', {});
-                room.scoreBoardWebIO.send('questions',{room:room.serialize()});
+                if(room.scoreBoardWebIO)room.scoreBoardWebIO.send('questions',{room:room.serialize()});
                 webIO.routeMap = states.selectingQuestion;
             }
             room.questionCount++;
