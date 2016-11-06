@@ -5,6 +5,15 @@ export default class TeamApprover extends React.Component{
     constructor(props){
         super(props)
         this.state = {};
+
+        this.audio = new Audio('./kahoot.mp3')
+
+        this.audio.play();
+        this.audio.loop = true;
+    }
+
+    componentWillUnmount() {
+        this.audio.pause();
     }
 
     goBtnClicked(){
