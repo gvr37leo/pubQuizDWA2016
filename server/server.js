@@ -77,8 +77,8 @@ app.ws('/', function(socket,req){
                 for(var team of room.teams)team.webIO.send('questions', {});
                 if(room.scoreBoardWebIO)room.scoreBoardWebIO.send('questions',{room:room.serialize()});
                 webIO.routeMap = states.selectingQuestion;
+                room.questionCount++;
             }
-            room.questionCount++;
             room.resetTeams();
         })
     }
